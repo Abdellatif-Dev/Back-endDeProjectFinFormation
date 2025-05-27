@@ -90,7 +90,20 @@ class MenuController extends Controller
      */
     public function update(Request $request, menu $menu)
     {
-        //
+        $menu->name=$request->name;
+        $menu->description=$request->description;
+        $menu->prix=$request->prix;
+        $menu->category=$request->category;
+        if($request->hasFile('image_plate')){
+            $image = $request->file('image_plate');
+            $filename = time() . '_' . $image->getClientOriginalName();
+            $path = $image->storeAs('Plats', $filename, 'public');
+        
+            $menu->image_plate=$path;
+        }
+        $menu->save();
+       return response()->json('Plat modifié avec succès !');
+ 
     }
 
     /**
