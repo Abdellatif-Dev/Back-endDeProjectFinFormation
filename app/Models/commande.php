@@ -1,0 +1,20 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class commande extends Model
+{
+    protected $guarded=[];
+     public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    // ✅ كل طلب يحتوي على عدة تفاصيل (plats)
+    public function details()
+    {
+        return $this->hasMany(CommandesDetail::class, 'commande_id');
+    }
+}
