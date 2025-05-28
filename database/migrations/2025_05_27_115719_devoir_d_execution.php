@@ -20,7 +20,7 @@ return new class extends Migration
                   ->onDelete('cascade')
                   ->onUpdate('cascade');
             
-            $table->string('mois', 20); // شهر كاسم أو رقم (مثلاً "Janvier" أو "01")
+            $table->integer('mois'); 
             $table->year('annee');
             
             $table->decimal('montant', 10, 2);

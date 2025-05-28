@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CommandesDetail;
 use App\Models\CommentResto;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -44,14 +45,14 @@ class UserController extends Controller
      */
     public function show(string $id)
     {
-        $restaurant = user::with(['menus','commandeDetails.commande'])
+        $restaurant = user::with(['menus', 'commandeDetails.commande'])
             ->where('id', $id)
             ->first();
-        $lesComments=CommentResto::with('user')
-            ->where('restaurant_id',$id)
+        $lesComments = CommentResto::with('user')
+            ->where('restaurant_id', $id)
             ->get();
-        
-        return response()->json(['restaurant'=>$restaurant,'lesComments'=>$lesComments]);
+
+        return response()->json(['restaurant' => $restaurant, 'lesComments' => $lesComments]);
     }
 
     /**
@@ -90,14 +91,22 @@ class UserController extends Controller
 
         return response()->json(['message' => 'Profil mis à jour avec succès', 'user' => $user]);
     }
-    
+
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(string $id)
     {
-        $user=User::find($id);
+        $user = User::find($id);
         $user->delete();
-        return response()->json('Suppression terminée avec succès' );
+        return response()->json('Suppression terminée avec succès');
+    }
+    public function showuser(string $id)
+    {
+        $users = User::with('devoirs')->
+            where('id', $id)->first();
+            $Profit =CommandesDetail::
+            where('restaurant_id', $id)->get();
+        return response()->json(['user'=>$users,'Profit'=>$Profit]);
     }
 }

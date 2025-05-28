@@ -34,7 +34,7 @@ class CommandeController extends Controller
     {
         $request->validate([
             'id' => 'required|exists:users,id',
-            'tele' => 'required|digits_between:8,15', // تحقق من أن الهاتف يحتوي فقط على أرقام بطول مناسب
+            'tele' => 'required|digits_between:8,15', 
         ]);
 
         $user = User::find($request->id);
@@ -125,14 +125,13 @@ class CommandeController extends Controller
 
         if ($request->status === 'livrée') {
             $menu = $detail->menu;
-            $restaurantId = $menu->restaurant_id; // تأكد أن لديك علاقة menu->user_id
-            $commission = $menu->prix * 0.1;
+            $restaurantId = $menu->restaurant_id; 
+            $commission = ($menu->prix * $detail->quantity) * 0.1;
 
             $now = Carbon::now();
             $mois = $now->month;
             $annee = $now->year;
 
-            // البحث عن سجل موجود لنفس المطعم في نفس الشهر والسنة
             $devoir = DevoirDExecution::where('restaurant_id', $restaurantId)
                 ->where('mois', $mois)
                 ->where('annee', $annee)
