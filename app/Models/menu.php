@@ -12,7 +12,6 @@ class menu extends Model
         return $this->belongsTo(User::class, 'restaurant_id');
     }
 
-    // ✅ كل طبق يمكن أن يكون موجودًا في تفاصيل طلبات
     public function commandeDetails()
     {
         return $this->hasMany(CommandesDetail::class);

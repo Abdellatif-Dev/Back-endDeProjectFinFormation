@@ -15,7 +15,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::with('devoirs')->get();
+        $users = User::with('devoirs')->whereIn('role',['client','restaurant'])->get();
         return response()->json($users);
     }
 
@@ -69,7 +69,6 @@ class UserController extends Controller
             'new_password' => 'nullable|string|min:8',
         ]);
 
-        // Vérification de mot de passe
         if ($request->filled('old_password') && $request->filled('new_password')) {
             if (!Hash::check($request->old_password, $user->password)) {
                 return response()->json(['message' => 'Ancien mot de passe incorrect', 'user' => $user]);
@@ -77,7 +76,6 @@ class UserController extends Controller
             $user->password = Hash::make($request->new_password);
         }
 
-        // Mise à jour de l'image
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $filename = time() . '_' . $image->getClientOriginalName();
@@ -103,10 +101,28 @@ class UserController extends Controller
     }
     public function showuser(string $id)
     {
-        $users = User::with('devoirs')->
-            where('id', $id)->first();
-            $Profit =CommandesDetail::
-            where('restaurant_id', $id)->get();
-        return response()->json(['user'=>$users,'Profit'=>$Profit]);
+        $users = User::with('devoirs')->where('id', $id)->first();
+        $Profit = CommandesDetail::where('restaurant_id', $id)->get();
+        return response()->json(['user' => $users, 'Profit' => $Profit]);
+    }
+    public function showNotification(string $id)
+    {
+        $user = User::find($id);
+        return response()->json([
+            'notifications' => $user->notifications()->orderBy('updated_at', 'desc')->get(),
+            'unread' => $user->unreadNotifications,
+        ]);
+    }
+    public function markNotificationsAsRead(string $id)
+    {
+        $user = User::find($id);
+
+        if (!$user) {
+            return response()->json(['message' => 'Utilisateur non trouvé'], 404);
+        }
+
+        $user->unreadNotifications->markAsRead();
+
+        return response()->json(['message' => 'Notifications marquées comme lues']);
     }
 }

@@ -6,8 +6,11 @@ use App\Models\commande;
 use App\Models\CommandesDetail;
 use App\Models\DevoirDExecution;
 use App\Models\User;
+use App\Notifications\CommandeLivreeNotification;
+use App\Notifications\NewCommandeNotification;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use PhpParser\Node\Expr\FuncCall;
 
 class CommandeController extends Controller
 {
@@ -34,7 +37,7 @@ class CommandeController extends Controller
     {
         $request->validate([
             'id' => 'required|exists:users,id',
-            'tele' => 'required|digits_between:8,15', 
+            'tele' => 'required|digits_between:8,15',
         ]);
 
         $user = User::find($request->id);
@@ -50,7 +53,7 @@ class CommandeController extends Controller
             'address' =>  $request->adresse
         ]);
         foreach ($request->command as $detail) {
-            CommandesDetail::create([
+            $commandDetail = CommandesDetail::create([
                 'commande_id' => $commande->id,
                 'menu_id' => $detail['id'],
                 'restaurant_id' => $detail['restaurant_id'],
@@ -58,6 +61,10 @@ class CommandeController extends Controller
                 'total_price' => $detail['prix'] * $detail['quantity'],
                 'status' => 'en attente',
             ]);
+            $restaurant = User::find($detail['restaurant_id']);
+            if ($restaurant) {
+                $restaurant->notify(new NewCommandeNotification($commandDetail));
+            }
         }
 
         return response()->json(
@@ -125,9 +132,14 @@ class CommandeController extends Controller
 
         if ($request->status === 'livrée') {
             $menu = $detail->menu;
-            $restaurantId = $menu->restaurant_id; 
+            $restaurantId = $menu->restaurant_id;
             $commission = ($menu->prix * $detail->quantity) * 0.1;
 
+            $id = $detail->commande->user_id;
+            $client = User::find($id);
+            if ($client) {
+                $client->notify(new CommandeLivreeNotification($detail));
+            }
             $now = Carbon::now();
             $mois = $now->month;
             $annee = $now->year;
@@ -152,5 +164,13 @@ class CommandeController extends Controller
         }
 
         return response()->json(['message' => 'Status mis à jour avec succès', 'data' => $detail], 200);
+    }
+    public function ChangeEtatDevoir(Request $request, $id)
+    {
+        $devoir = DevoirDExecution::find($id);
+        $devoir->etat = $request->etat;
+        $devoir->save();
+
+        return response()->json('État mis à jour');
     }
 }

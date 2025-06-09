@@ -12,7 +12,6 @@ class commande extends Model
         return $this->belongsTo(User::class);
     }
 
-    // ✅ كل طلب يحتوي على عدة تفاصيل (plats)
     public function details()
     {
         return $this->hasMany(CommandesDetail::class, 'commande_id');

@@ -13,13 +13,11 @@ class CommandesDetail extends Model
         return $this->belongsTo(Commande::class);
     }
 
-    // ✅ ينتمي إلى طبق
     public function menu()
     {
         return $this->belongsTo(Menu::class);
     }
 
-    // ✅ ينتمي إلى مطعم
     public function restaurant()
     {
         return $this->belongsTo(User::class, 'restaurant_id');

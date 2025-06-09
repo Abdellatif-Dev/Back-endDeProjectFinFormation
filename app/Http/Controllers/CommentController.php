@@ -29,7 +29,6 @@ class CommentController extends Controller
      */
     public function store(Request $request)
     {
-        // ✅ التحقق من صحة البيانات
         $validated = $request->validate([
             'menu_id' => 'required|exists:menus,id',
             'user_id' => 'required|exists:users,id',
@@ -37,7 +36,6 @@ class CommentController extends Controller
             'rating' => 'required|numeric|min:1|max:5',
         ]);
 
-        // ❌ التأكد أن المستخدم لم يعلّق من قبل على نفس الطبق
         $exists = comment::where('menu_id', $validated['menu_id'])
             ->where('user_id', $validated['user_id'])
             ->exists();
@@ -48,7 +46,6 @@ class CommentController extends Controller
             ], 403);
         }
 
-        // ✅ إنشاء التعليق
         $comment = comment::create([
             'menu_id' => $validated['menu_id'],
             'user_id' => $validated['user_id'],

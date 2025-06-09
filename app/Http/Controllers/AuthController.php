@@ -52,18 +52,14 @@ class AuthController extends Controller
         'password' => 'required|string',
     ]);
 
-    // Try to find the user by email
     $user = User::where('email', $request->email)->first();
 
-    // Check if user exists and password is correct
     if (!$user || !Hash::check($request->password, $user->password)) {
         return response()->json(['message' => 'Email ou mot de passe incorrect'], 401);
     }
 
-    // Log the user in
     Auth::login($user);
 
-    // Return user data
     return response()->json($user, 200);
         
         
@@ -96,7 +92,6 @@ class AuthController extends Controller
             'imageResto' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
-        // تحديث الحقول فقط إذا أرسلها المستخدم
         $user->name = $request->name ?? $user->name;
         $user->nameResto = $request->nameResto ?? $user->nameResto;
         $user->address = $request->address ?? $user->address;
@@ -105,11 +100,9 @@ class AuthController extends Controller
         if ($request->hasFile('image_resto')) {
             $image = $request->file('image_resto');
             $filename = time() . '_' . $image->getClientOriginalName();
-            // تخزين الصورة داخل storage/app/public/restos باسمها الأصلي
             $path = $image->storeAs('restos', $filename, 'public');
 
-            // حفظ المسار النسبي داخل قاعدة البيانات (دون 'storage/' لأنه داخل storage/app)
-            $user->image_resto = $path; // يُخزن: public/restos/اسم_الصورة.jpg
+            $user->image_resto = $path; 
         }
 
         $user->save();

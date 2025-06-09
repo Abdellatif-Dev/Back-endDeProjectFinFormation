@@ -13,6 +13,8 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 Route::apiResource("users", UserController::class);
 Route::get("/showuser/{id}", [UserController::class,'showuser']);
+Route::get("/showNotification/{id}", [UserController::class,'showNotification']);
+Route::get('/notifications/read/{id}', [UserController::class, 'markNotificationsAsRead']);
 Route::get("/logout", [AuthController::class,'logout']);
 Route::post("/register", [AuthController::class,'register']);
 Route::post("/login", [AuthController::class,'login']);
@@ -27,6 +29,7 @@ Route::post("/ajouterCommenteResto", [CommentController::class,'ajouterCommenteR
 Route::get("/showCommande/{id}", [CommandeController::class,'showCommande']);
 Route::get("/showCommandeClient/{id}", [CommandeController::class,'showCommandeClient']);
 Route::put('/commande-detail/{id}/status', [CommandeController::class, 'updateStatus']);
+Route::put('/devoirs/{id}', [CommandeController::class, 'ChangeEtatDevoir']);
 
 
 

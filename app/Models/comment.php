@@ -12,7 +12,6 @@ class comment extends Model
         return $this->belongsTo(User::class);
     }
 
-    // Chaque commentaire est lié à un plat
     public function menu()
     {
         return $this->belongsTo(Menu::class);

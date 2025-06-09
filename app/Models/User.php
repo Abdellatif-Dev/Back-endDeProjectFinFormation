@@ -54,13 +54,11 @@ class User extends Authenticatable
         return $this->hasMany(Commande::class);
     }
 
-    // ✅ إذا كان صاحب مطعم، فالمستخدم لديه عدة أطباق (menus)
     public function menus()
     {
         return $this->hasMany(Menu::class, 'restaurant_id');
     }
 
-    // ✅ إذا كان صاحب مطعم، فله تفاصيل عدة طلبات (commande_details)
     public function commandeDetails()
     {
         return $this->hasMany(CommandesDetail::class, 'restaurant_id');
@@ -70,7 +68,6 @@ class User extends Authenticatable
         return $this->hasMany(Comment::class);
     }
 
-    // Un utilisateur peut faire plusieurs commentaires sur les restaurants
     public function commentsResto()
     {
         return $this->hasMany(CommentResto::class);
